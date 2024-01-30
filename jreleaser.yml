@@ -1,0 +1,52 @@
+environment:
+  properties:
+    jdkPathPrefix: target/jdks
+    graalFilePrefix: graalvm-community-openjdk-21.0.2+13.1
+    artifactsDir: out/jreleaser/assemble/helloworld/native-image
+
+project:
+  name: helloworld
+  description: HelloWorld in Java
+  longDescription: HelloWorld in Java
+  links:
+    homepage: https://github.com/aalmiray/helloworld-graalvm
+  authors:
+    - Andres Almiray
+  license: APACHE-2.0
+  inceptionYear: 2023
+  stereotype: CLI
+  java:
+    version: 21
+    groupId: org.jreleaser.examples
+    artifactId: helloworld
+    mainClass: org.jreleaser.examples.HelloWorld
+
+platform:
+  replacements:
+    aarch_64: aarch64
+
+release:
+  github:
+    overwrite: true
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+
+assemble:
+  nativeImage:
+    helloworld:
+      active: ALWAYS
+      imageName: '{{distributionName}}-{{projectEffectiveVersion}}'
+      mainJar:
+        path: 'target/{{distributionName}}-{{projectVersion}}.jar'
+      graalJdks:
+        - path: '{{jdkPathPrefix}}/graalvm21OsxArm/{{graalFilePrefix}}/Contents/Home'
+          platform: 'osx-aarch_64'
+        - path: '{{jdkPathPrefix}}/graalvm21OsxIntel/{{graalFilePrefix}}/Contents/Home'
+          platform: 'osx-x86_64'
+        - path: '{{jdkPathPrefix}}/graalvm21LinuxIntel/{{graalFilePrefix}}'
+          platform: 'linux-x86_64'
+        - path: '{{jdkPathPrefix}}/graalvm21WindowsIntel/{{graalFilePrefix}}'
+          platform: 'windows-x86_64'

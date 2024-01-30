@@ -30,13 +30,6 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Setup Graal
-        uses: graalvm/setup-graalvm@v1
-        with:
-          distribution: graalvm-community
-          java-version: ${{ inputs.java-version }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -50,10 +43,6 @@ jobs:
       - name: Build
         run: ./mvnw -ntp -B verify
 
-      - name: Install upx
-        run: brew install upx
-        if: ${{ runner.os == 'macOS' }}
-
       - name: Assemble
         uses: jreleaser/release-action@v2
         with:
@@ -66,7 +55,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jreleaser-release
+          name: jreleaser-assemble-${{ runner.os }}-${{ runner.arch }}
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
